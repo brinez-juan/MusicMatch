@@ -1,4 +1,4 @@
-from ingest import fetch_soundnet, fetch_spotify_metadata, build_feature_vector
+from integration import fetch_soundnet, fetch_spotify_metadata, build_feature_vector
 import pandas as pd
 import numpy as np
 
