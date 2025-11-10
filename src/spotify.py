@@ -50,5 +50,5 @@ def fetch_spotify_metadata(spotify_track_id):
 
 # TEST CALL
 if __name__ == "__main__":
-    test_id = "2NQhQlcVAcDRN3jf6FDTlm"  # Blinding Lights
+    test_id = "0VjIjW4GlUZAMYd2vXMi3b"  # Blinding Lights
     print(fetch_spotify_metadata(test_id))
