@@ -237,3 +237,7 @@ if __name__ == "__main__":
         print(f"Error during test: {e}")
         import traceback
         traceback.print_exc()
+
+    track_ids = ["29bl4Sr23RrFR0o8mSvPJ2", "1U3A66OHQyTu4N2QTMsP86"]  # Example IDs
+    df, results = build_feature_dataframe(track_ids)
+    print(df)
