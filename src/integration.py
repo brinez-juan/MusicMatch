@@ -79,8 +79,6 @@ def build_feature_vector(spotify_track_url_or_id):
     }
 
     print("\n✓ Song features successfully extracted!")
-    for k, v in result.items():
-        print(f"{k:20s}: {v}")
 
     return result
 
@@ -88,7 +86,10 @@ def build_feature_vector(spotify_track_url_or_id):
 # TEST CALL
 if __name__ == "__main__":
     song = input("Enter Spotify track URL or ID: ")
-    build_feature_vector(song)
+    features = build_feature_vector(song)
+    print("\nExtracted Features:")
+    for key, value in features.items():
+        print(f"{key}: {value}")
     
 
    
