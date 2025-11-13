@@ -1,5 +1,6 @@
 from spotipy.oauth2 import SpotifyOAuth #spotify authentication library
 import spotipy #spotify functions library
+import re
 
 # Configuration variables
 from config import ( 
@@ -46,6 +47,26 @@ def fetch_spotify_metadata(spotify_track_id):
         "release_date": metadata["album"]["release_date"],
         "album": metadata["album"]["name"]  
     }
+
+def get_all_tracks_from_url(url):
+    """
+    Returns a list of track IDs from a Spotify album or playlist URL.
+    """
+    album_match = re.search(r"open\.spotify\.com/(?:intl-[a-z]{2}/)?album/([\w\d]+)", url)
+    playlist_match = re.search(r"open\.spotify\.com/(?:intl-[a-z]{2}/)?playlist/([\w\d]+)", url)
+
+    if album_match:
+        album_id = album_match.group(1)
+        results = sp.album_tracks(album_id)
+        return [t["id"] for t in results["items"]]
+
+    elif playlist_match:
+        playlist_id = playlist_match.group(1)
+        results = sp.playlist_tracks(playlist_id)
+        return [t["track"]["id"] for t in results["items"] if t["track"]]
+
+    else:
+        raise ValueError("URL must be an album or playlist.")
 
 
 # TEST CALL
