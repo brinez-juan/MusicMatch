@@ -5,6 +5,7 @@ from soundNet import fetch_soundnet
 from Musixmatch import get_lyrics, get_continuous_sentiment
 from saveSongs import load_songs, song_exists, get_song_by_id, save_song_data
 import re
+import time
 
 ########################
 # Integration: Build unified data vector from Spotify track URL or ID
