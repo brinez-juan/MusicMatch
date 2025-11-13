@@ -3,6 +3,7 @@ import pandas as pd
 from spotify import fetch_spotify_metadata
 from soundNet import fetch_soundnet
 from Musixmatch import get_lyrics, get_continuous_sentiment
+from saveSongs import load_songs, song_exists, get_song_by_id, save_song_data
 import re
 
 ########################
@@ -86,10 +87,17 @@ def build_feature_vector(spotify_track_url_or_id):
 # TEST CALL
 if __name__ == "__main__":
     song = input("Enter Spotify track URL or ID: ")
-    features = build_feature_vector(song)
-    print("\nExtracted Features:")
-    for key, value in features.items():
-        print(f"{key}: {value}")
+    spotify_track_id = get_track_id_from_url(song)
+
+    # Check if we already have it stored
+    if song_exists(spotify_track_id):
+        print("✓ Song already in local database.")
+        song_data = get_song_by_id(spotify_track_id)
+        print(song_data)
+    else:
+        print("→ Song not found in local database. Fetching data...")
+        song_data = build_feature_vector(song)
+        save_song_data(song_data)
     
 
    

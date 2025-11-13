@@ -1,40 +1,71 @@
 import os
 import pandas as pd
 
-def save_song_data(song_data, filename="songs.csv"):
+# ===== Global cache =====
+CACHE = None
+FILENAME = "songs.csv"
+
+
+def load_songs(filename=FILENAME):
+    """
+    Loads all saved songs from CSV into a DataFrame.
+    Returns an empty DataFrame if file doesn't exist.
+    """
+    global CACHE
+    if CACHE is not None:
+        return CACHE
+
+    if os.path.exists(filename):
+        CACHE = pd.read_csv(filename)
+        print(f"✓ Loaded {len(CACHE)} songs from {filename}.")
+    else:
+        CACHE = pd.DataFrame()
+        print("⚠ No existing songs found, starting fresh.")
+
+    return CACHE
+
+
+def song_exists(track_id, filename=FILENAME):
+    """
+    Checks if a song with the given Spotify track ID already exists in the dataset.
+    """
+    df = load_songs(filename)
+    return not df.empty and track_id in df["spotify_track_id"].values
+
+
+def get_song_by_id(track_id, filename=FILENAME):
+    """
+    Returns a dictionary of the song data for a given Spotify track ID if it exists.
+    """
+    df = load_songs(filename)
+    if df.empty:
+        return None
+    match = df[df["spotify_track_id"] == track_id]
+    if match.empty:
+        return None
+    return match.iloc[0].to_dict()
+
+
+def save_song_data(song_data, filename=FILENAME):
     """
     Saves a single song's data (dictionary) into a local CSV file.
     Automatically creates the file if it doesn't exist and prevents duplicates.
     """
-    # Convert dict to DataFrame
+    global CACHE
     new_row = pd.DataFrame([song_data])
 
-    # If file exists, read it; otherwise create a new one
+    # Load or create DataFrame
     if os.path.exists(filename):
-        df = pd.read_csv(filename)
-        
-        # Check for duplicates
-        if song_data["spotify_track_id"] in df["spotify_track_id"].values:
+        df = load_songs(filename)
+        if song_data["spotify_track_id"] in df.get("spotify_track_id", []):
             print(f"⚠ Song {song_data['title']} by {song_data['artist']} already exists in {filename}.")
             return
-        
-        # Append new row
         df = pd.concat([df, new_row], ignore_index=True)
     else:
         df = new_row
 
     # Save to CSV
     df.to_csv(filename, index=False, encoding="utf-8-sig")
+    CACHE = df  # update cache
     print(f"✓ Song '{song_data['title']}' by {song_data['artist']} saved to {filename}.")
 
-
-def load_songs(filename="songs.csv"):
-    """
-    Loads all saved songs from CSV.
-    Returns a pandas DataFrame, or an empty one if file doesn't exist.
-    """
-    if os.path.exists(filename):
-        return pd.read_csv(filename)
-    else:
-        print("⚠ No songs found. The file doesn't exist yet.")
-        return pd.DataFrame()
