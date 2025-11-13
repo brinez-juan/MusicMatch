@@ -12,22 +12,24 @@ import re
 def get_track_id_from_url(spotify_url_or_id):
     """
     Extracts Spotify track ID from a URL or returns the ID if already provided.
+    Supports URLs with or without locale segments (e.g. /intl-es/).
     """
     # Spotify URI: spotify:track:<id>
     match_uri = re.match(r"spotify:track:(\w+)", spotify_url_or_id)
     if match_uri:
         return match_uri.group(1)
 
-    # Spotify URL: https://open.spotify.com/track/<id>
-    match_url = re.search(r"open\.spotify\.com/track/(\w+)", spotify_url_or_id)
+    # Spotify URL: https://open.spotify.com/(intl-xx/)?track/<id>
+    match_url = re.search(r"open\.spotify\.com/(?:intl-[a-z]{2}/)?track/([\w\d]+)", spotify_url_or_id)
     if match_url:
         return match_url.group(1)
 
-    # Assume it’s already an ID
+    # Assume it's already an ID
     if re.match(r"^[\w\d]{22}$", spotify_url_or_id):
         return spotify_url_or_id
 
     raise ValueError(f"Invalid Spotify track URL or ID: {spotify_url_or_id}")
+
 
 
 def build_feature_vector(spotify_track_url_or_id):
@@ -86,6 +88,6 @@ if __name__ == "__main__":
     print("\nUnified Feature Vector:")
     for key, value in features.items():
         print(f"{key}: {value}")
-        
+
    
 
