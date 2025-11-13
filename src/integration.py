@@ -144,45 +144,6 @@ def build_feature_vector(spotify_track_url_or_id):
     return result
 
 
-def build_feature_dataframe(spotify_urls_or_ids):
-    """
-    Builds feature vectors for multiple tracks, running ID extraction first.
-    """
-    results = []
-    for i, url_or_id in enumerate(spotify_urls_or_ids):
-        print(f"\n[{i+1}/{len(spotify_urls_or_ids)}] Processing track...")
-        try:
-            feature_dict = build_feature_vector(url_or_id)
-            results.append(feature_dict)
-        except Exception as e:
-            print(f"  ✗ Skipped track {url_or_id}: {e}")
-            continue
-
-    df = pd.DataFrame([
-        {
-            "spotify_track_id": r["spotify_track_id"],
-            "title": r["title"],
-            "artist": r["artist"],
-            "album": r["album"],
-            "popularity": r["popularity"],
-            "tempo": r["tempo"],
-            "energy": r["energy"],
-            "danceability": r["danceability"],
-            "happiness": r["happiness"],
-            "acousticness": r["acousticness"],
-            "instrumentalness": r["instrumentalness"],
-            "liveness": r["liveness"],
-            "speechiness": r["speechiness"],
-            "loudness_db": r["loudness_db"],
-            "sentiment_score": r["sentiment_score"],
-            "sentiment_label": r["sentiment_label"],
-            "lyrics_available": r["lyrics_available"],
-        }
-        for r in results
-    ])
-    return df, results
-
-
 # TEST CALL
 if __name__ == "__main__":
     test_url = "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b"
