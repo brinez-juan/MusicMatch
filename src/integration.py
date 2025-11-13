@@ -74,9 +74,13 @@ def build_feature_vector(spotify_track_url_or_id):
         "instrumentalness": soundnet_data['instrumentalness'],
         "liveness": soundnet_data['liveness'],
         "speechiness": soundnet_data['speechiness'],
-        "loudness_db": soundnet_data['loudness_db'],
+        "loudness": soundnet_data['loudness'],
         "sentiment_score": sentiment_score,
     }
+
+    print("\n✓ Song features successfully extracted!")
+    for k, v in result.items():
+        print(f"{k:20s}: {v}")
 
     return result
 
@@ -84,10 +88,8 @@ def build_feature_vector(spotify_track_url_or_id):
 # TEST CALL
 if __name__ == "__main__":
     song = input("Enter Spotify track URL or ID: ")
-    features = build_feature_vector(song)
-    print("\nUnified Feature Vector:")
-    for key, value in features.items():
-        print(f"{key}: {value}")
+    build_feature_vector(song)
+    
 
    
 
