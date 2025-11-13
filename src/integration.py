@@ -41,62 +41,20 @@ def build_feature_vector(spotify_track_url_or_id):
     # ===== 1. FETCH SPOTIFY METADATA =====
     print("[1/3] Fetching Spotify metadata...")
     spotify_data = fetch_spotify_metadata(spotify_track_id)
-    print(f"  ✓ Title: {spotify_data['title']}")
-    print(f"  ✓ Artist: {spotify_data['artist']}")
-    print(f"  ✓ Popularity: {spotify_data['popularity']}")
 
     # ===== 2. FETCH SOUNDNET AUDIO FEATURES =====
     print("\n[2/3] Fetching SoundNet audio features...")
     soundnet_data = fetch_soundnet(spotify_track_id)
-    print(f"  ✓ Tempo: {soundnet_data.get('tempo', 'N/A')}")
-    print(f"  ✓ Energy: {soundnet_data.get('energy', 'N/A')}")
-    print(f"  ✓ Danceability: {soundnet_data.get('danceability', 'N/A')}")
 
     # ===== 3. FETCH LYRICS & SENTIMENT =====
     print("\n[3/3] Fetching lyrics and sentiment...")
     lyrics = get_lyrics(spotify_data['title'], spotify_data['artist'])
     if lyrics:
         sentiment_score = get_continuous_sentiment(lyrics)
-        print(f"  ✓ Lyrics found ({len(lyrics)} characters)")
-        print(f"  ✓ Sentiment score: {sentiment_score:.3f}")
     else:
         sentiment_score = 0.0
         lyrics = ""
-        print(f"  ⚠ No lyrics found, setting sentiment to 0.0")
 
-    # ===== 4. BUILD UNIFIED FEATURE VECTOR =====
-    tempo = float(soundnet_data.get("tempo", 0))
-    energy = float(soundnet_data.get("energy", 0)) / 100.0
-    danceability = float(soundnet_data.get("danceability", 0)) / 100.0
-    happiness = float(soundnet_data.get("happiness", 0)) / 100.0
-    acousticness = float(soundnet_data.get("acousticness", 0)) / 100.0
-    instrumentalness = float(soundnet_data.get("instrumentalness", 0)) / 100.0
-    liveness = float(soundnet_data.get("liveness", 0)) / 100.0
-    speechiness = float(soundnet_data.get("speechiness", 0)) / 100.0
-
-    loudness_str = soundnet_data.get("loudness", "-60 dB")
-    try:
-        loudness = float(loudness_str.replace(" dB", ""))
-    except:
-        loudness = -60.0
-    loudness_norm = (loudness + 60.0) / 60.0
-
-    popularity = spotify_data['popularity'] / 100.0
-    sentiment_norm = (sentiment_score + 1.0) / 2.0
-
-    feature_vector = np.array([
-        tempo,
-        energy,
-        danceability,
-        happiness,
-        acousticness,
-        instrumentalness,
-        liveness,
-        speechiness,
-        loudness_norm,
-        popularity,
-        sentiment_norm
-    ], dtype=np.float32)
 
     result = {
         "spotify_track_id": spotify_track_id,
@@ -106,56 +64,28 @@ def build_feature_vector(spotify_track_url_or_id):
         "release_date": spotify_data['release_date'],
         "popularity": spotify_data['popularity'],
         "duration_ms": spotify_data['duration_ms'],
-        "tempo": tempo,
-        "energy": energy * 100,
-        "danceability": danceability * 100,
-        "happiness": happiness * 100,
-        "acousticness": acousticness * 100,
-        "instrumentalness": instrumentalness * 100,
-        "liveness": liveness * 100,
-        "speechiness": speechiness * 100,
-        "loudness_db": loudness,
+        "tempo": soundnet_data['tempo'],
+        "energy": soundnet_data['energy'],
+        "danceability": soundnet_data['danceability'],
+        "happiness": soundnet_data['happiness'],
+        "acousticness": soundnet_data['acousticness'],
+        "instrumentalness": soundnet_data['instrumentalness'],
+        "liveness": soundnet_data['liveness'],
+        "speechiness": soundnet_data['speechiness'],
+        "loudness_db": soundnet_data['loudness_db'],
         "sentiment_score": sentiment_score,
-        "sentiment_label": (
-            "Very Negative" if sentiment_score < -0.6 else
-            "Negative" if sentiment_score < -0.2 else
-            "Neutral" if sentiment_score < 0.2 else
-            "Positive" if sentiment_score < 0.6 else
-            "Very Positive"
-        ),
-        "lyrics_available": bool(lyrics),
-        "feature_vector": feature_vector,
-        "feature_vector_labels": [
-            "tempo_norm",
-            "energy",
-            "danceability",
-            "happiness",
-            "acousticness",
-            "instrumentalness",
-            "liveness",
-            "speechiness",
-            "loudness",
-            "popularity",
-            "sentiment"
-        ]
     }
 
-    print(f"\n✓ Feature vector created ({len(feature_vector)} dimensions)")
     return result
 
 
 # TEST CALL
 if __name__ == "__main__":
-    test_url = "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b"
-    result = build_feature_vector(test_url)
-    print("\nFINAL FEATURE VECTOR")
-    print(f"{result['title']} by {result['artist']}, sentiment: {result['sentiment_score']:.3f}")
-
-    urls = [
-        "https://open.spotify.com/track/29bl4Sr23RrFR0o8mSvPJ2",
-        "spotify:track:1U3A66OHQyTu4N2QTMsP86",
-        "0VjIjW4GlUZAMYd2vXMi3b"
-    ]
-    df, results = build_feature_dataframe(urls)
-    print(df)
+    song = input("Enter Spotify track URL or ID: ")
+    features = build_feature_vector(song)
+    print("\nUnified Feature Vector:")
+    for key, value in features.items():
+        print(f"{key}: {value}")
+        
+   
 
