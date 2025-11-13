@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from spotify import fetch_spotify_metadata
+from spotify import fetch_spotify_metadata, get_all_tracks_from_url
 from soundNet import fetch_soundnet
 from Musixmatch import get_lyrics, get_continuous_sentiment
 from saveSongs import load_songs, song_exists, get_song_by_id, save_song_data
@@ -86,18 +86,24 @@ def build_feature_vector(spotify_track_url_or_id):
 
 # TEST CALL
 if __name__ == "__main__":
-    song = input("Enter Spotify track URL or ID: ")
-    spotify_track_id = get_track_id_from_url(song)
+    spotify_input = input("Enter Spotify track, album, or playlist URL: ").strip()
 
-    # Check if we already have it stored
-    if song_exists(spotify_track_id):
-        print("✓ Song already in local database.")
-        song_data = get_song_by_id(spotify_track_id)
-        print(song_data)
-    else:
-        print("→ Song not found in local database. Fetching data...")
-        song_data = build_feature_vector(song)
-        save_song_data(song_data)
+    try:
+        if "album" in spotify_input or "playlist" in spotify_input:
+            track_ids = get_all_tracks_from_url(spotify_input)
+            print(f"🎧 Found {len(track_ids)} tracks. Processing...")
+        else:
+            track_ids = [get_track_id_from_url(spotify_input)]
+
+        for i, track_id in enumerate(track_ids, start=1):
+            print(f"\n[{i}/{len(track_ids)}] Processing track ID: {track_id}")
+            song_data = build_feature_vector(track_id)
+            save_song_data(song_data)
+            time.sleep(1)  # avoid rate limits
+        print("\n✅ All tracks processed successfully!")
+
+    except Exception as e:
+        print(f"❌ Error: {e}")
     
 
    
