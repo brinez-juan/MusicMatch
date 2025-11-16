@@ -225,5 +225,11 @@ data/processed/
 .vscode/
 .idea/
 
+#spotipy cache
+.cache
+# Spotipy cache (local Spotify authentication token)
 .spotipy_cache
+/.spotipy_cache
+**/.spotipy_cache
+
 

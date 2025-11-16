@@ -8,6 +8,16 @@ import torch.nn.functional as F
 
 BASE_URL = "https://api.musixmatch.com/ws/1.1"
 
+""" 
+Track search - Based on the song name and artist returns the Musixmatch ID
+
+    Takes the client ID, client secret, and redirect URI from the config file wich are 
+    obtained from the Spotify Developer Dashboard when creating an app.
+
+    Defines the scope of access required, in this case to read user private data, email, 
+    top tracks, and library.
+
+"""
 
 def search_track_on_musixmatch(song_title, artist_name):
     url = f"{BASE_URL}/track.search"

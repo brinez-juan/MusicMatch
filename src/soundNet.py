@@ -7,9 +7,17 @@ from config import (
     SOUNDNET_API_KEY
 )
 
-########################
-# 1. Fetch from SoundNet
-########################
+""" 
+SoundNet extraction - recieves the ID for a song and shows the audio features
+
+    Takes the rapidapi key for Soundnet from the config file and makes a request to the API
+    to fecth the audio analysis of a given track
+
+    It has error handling. The API limits the number of requests someone can do at the same time. 
+    If the request status code equals 200 then ir proceeds normally, but if it's 429 it recieved too
+    many requests, therefore waits and trys again automatically
+
+"""
 def fetch_soundnet(track_id):
 
     url = f"https://track-analysis.p.rapidapi.com/pktx/spotify/{track_id}"
