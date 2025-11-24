@@ -32,8 +32,8 @@ def fetch_soundnet(track_id):
         return r.json()
 
     if r.status_code == 429:
-        print("[429] Too many requests. Waiting 1.5s and retrying...")
-        time.sleep(3)
+        print("[429] Too many requests. Waiting 10s and retrying...")
+        time.sleep(10)
         return fetch_soundnet(track_id)
 
     raise Exception(f"SoundNet error {r.status_code} — {r.text}")
