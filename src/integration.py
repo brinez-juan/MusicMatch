@@ -100,7 +100,7 @@ if __name__ == "__main__":
             print(f"\n[{i}/{len(track_ids)}] Processing track ID: {track_id}")
             song_data = build_feature_vector(track_id)
             save_song_data(song_data)
-            time.sleep(3)  # avoid rate limits
+            time.sleep(7)  # avoid rate limits
         print("\n✅ All tracks processed successfully!")
 
     except Exception as e:
