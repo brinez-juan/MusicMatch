@@ -57,7 +57,7 @@ def save_song_data(song_data, filename=FILENAME):
     # Load or create DataFrame
     if os.path.exists(filename):
         df = load_songs(filename)
-        if song_data["spotify_track_id"] in df.get("spotify_track_id", []):
+        if song_data["spotify_track_id"] in df["spotify_track_id"].values:
             print(f"⚠ Song {song_data['title']} by {song_data['artist']} already exists in {filename}.")
             return
         df = pd.concat([df, new_row], ignore_index=True)
@@ -66,6 +66,6 @@ def save_song_data(song_data, filename=FILENAME):
 
     # Save to CSV
     df.to_csv(filename, index=False, encoding="utf-8-sig")
-    CACHE = df  # update cache
+    CACHE = None  # invalidate cache to force reload on next call
     print(f"✓ Song '{song_data['title']}' by {song_data['artist']} saved to {filename}.")
 
