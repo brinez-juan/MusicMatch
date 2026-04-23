@@ -31,7 +31,12 @@ def process_track(url_or_id: str) -> dict[str, Any]:
     lyrics, language = musixmatch.get_lyrics_and_language(
         spotify_data["title"], spotify_data["artist"]
     )
-    sentiment_score = sentiment.get_continuous_sentiment(lyrics) if lyrics else 0.0
+    if lyrics:
+        emotions = sentiment.get_scorer().score(lyrics)
+    else:
+        emotions = {"anger": 0.0, "fear": 0.0, "joy": 0.0, "sadness": 0.0}
+    # Derived valence keeps the legacy sentiment_score column alive for the recommender.
+    sentiment_score = emotions["joy"] - (emotions["anger"] + emotions["fear"] + emotions["sadness"]) / 3.0
 
     try:
         genres = spotify.fetch_artist_genres(spotify_data["artist_id"])
@@ -57,6 +62,10 @@ def process_track(url_or_id: str) -> dict[str, Any]:
         "speechiness": soundnet_data["speechiness"],
         "loudness": _parse_loudness(soundnet_data["loudness"]),
         "sentiment_score": sentiment_score,
+        "emotion_anger": emotions["anger"],
+        "emotion_fear": emotions["fear"],
+        "emotion_joy": emotions["joy"],
+        "emotion_sadness": emotions["sadness"],
         "language": language or "",
         "genres": "|".join(genres),
     }

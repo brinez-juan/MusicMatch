@@ -20,21 +20,30 @@ FEATURE_COLUMNS = [
     "speechiness",
     "loudness",
     "sentiment_score",
+    "emotion_anger",
+    "emotion_fear",
+    "emotion_joy",
+    "emotion_sadness",
 ]
 
 # Perceptual weights: valence/energy/danceability dominate how "similar" two tracks
-# feel; liveness and loudness matter less. Sentiment gets an emphasis boost.
+# feel; liveness and loudness matter less. sentiment_score is halved because it's
+# now derived from the emotion vector — full weight would double-count those dims.
 FEATURE_WEIGHTS = np.array([
-    1.0,  # tempo
-    1.5,  # energy
-    1.5,  # danceability
-    1.5,  # happiness
-    1.0,  # acousticness
-    1.0,  # instrumentalness
-    0.5,  # liveness
-    1.0,  # speechiness
-    0.5,  # loudness
-    1.5,  # sentiment_score
+    1.0,   # tempo
+    1.5,   # energy
+    1.5,   # danceability
+    1.5,   # happiness
+    1.0,   # acousticness
+    1.0,   # instrumentalness
+    0.5,   # liveness
+    1.0,   # speechiness
+    0.5,   # loudness
+    0.75,  # sentiment_score (derived valence)
+    0.75,  # emotion_anger
+    0.75,  # emotion_fear
+    0.75,  # emotion_joy
+    0.75,  # emotion_sadness
 ])
 
 LANGUAGE_BONUS = 0.25  # +bonus if match, -bonus if mismatch, 0 if unknown either side
