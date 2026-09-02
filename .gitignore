@@ -225,6 +225,11 @@ data/processed/
 .vscode/
 .idea/
 
+# Claude Code local files (CLAUDE.md is kept local only; README is the public doc)
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+
 #spotipy cache
 .cache
 # Spotipy cache (local Spotify authentication token)
